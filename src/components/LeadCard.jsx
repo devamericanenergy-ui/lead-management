@@ -42,6 +42,16 @@ export default function LeadCard({ lead, onEdit }) {
         {formatFollowUp(lead.follow_up_at)}
       </p>
 
+      {(lead.latitude || lead.longitude) && (
+        <p className="text-xs text-gray-400 mt-1">
+          📍 {lead.latitude?.toFixed(4)}, {lead.longitude?.toFixed(4)}
+        </p>
+      )}
+
+      {lead.address && (
+        <p className="text-xs text-gray-600 mt-1">{lead.address}</p>
+      )}
+
       <button
         onClick={() => onEdit(lead)}
         className="w-full mt-3 border border-gray-300 rounded-md py-1.5 text-xs font-medium"

@@ -22,7 +22,7 @@ export default function Login() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm bg-white border border-gray-200 rounded-xl p-6"
       >
-        <h1 className="text-lg font-medium mb-1">AE Leads</h1>
+        <h1 className="text-lg font-medium mb-1">Dashboard</h1>
         <p className="text-sm text-gray-500 mb-5">Sign in with your salesperson account</p>
 
         <label className="text-xs text-gray-500">Email</label>

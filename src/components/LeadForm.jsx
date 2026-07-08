@@ -19,6 +19,7 @@ function toLocalDatetimeInput(value) {
 
 export default function LeadForm({ lead, onSave, onCancel, onDelete, saving }) {
   const isEdit = Boolean(lead?.id)
+  const [geoLoading, setGeoLoading] = useState(false)
 
   const [form, setForm] = useState({
     customer_name: lead?.customer_name || '',
@@ -27,18 +28,44 @@ export default function LeadForm({ lead, onSave, onCancel, onDelete, saving }) {
     source: lead?.source || 'referral',
     status: lead?.status || 'new',
     notes: lead?.notes || '',
-    follow_up_at: toLocalDatetimeInput(lead?.follow_up_at)
+    follow_up_at: toLocalDatetimeInput(lead?.follow_up_at),
+    latitude: lead?.latitude || '',
+    longitude: lead?.longitude || ''
   })
 
   function update(field, value) {
     setForm((f) => ({ ...f, [field]: value }))
   }
 
+  function handleGetLocation() {
+    setGeoLoading(true)
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          update('latitude', latitude.toFixed(6))
+          update('longitude', longitude.toFixed(6))
+          setGeoLoading(false)
+        },
+        (error) => {
+          console.error('Geolocation error:', error)
+          alert('Unable to get location. Make sure location permission is enabled.')
+          setGeoLoading(false)
+        }
+      )
+    } else {
+      alert('Geolocation is not supported by your browser.')
+      setGeoLoading(false)
+    }
+  }
+
   function handleSubmit(e) {
     e.preventDefault()
     onSave({
       ...form,
-      follow_up_at: form.follow_up_at ? new Date(form.follow_up_at).toISOString() : null
+      follow_up_at: form.follow_up_at ? new Date(form.follow_up_at).toISOString() : null,
+      latitude: form.latitude ? parseFloat(form.latitude) : null,
+      longitude: form.longitude ? parseFloat(form.longitude) : null
     })
   }
 
@@ -109,6 +136,41 @@ export default function LeadForm({ lead, onSave, onCancel, onDelete, saving }) {
           onChange={(e) => update('notes', e.target.value)}
           className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mt-1 mb-4"
         />
+
+        <label className="text-xs text-gray-500">Location Coordinates</label>
+        <button
+          type="button"
+          onClick={handleGetLocation}
+          disabled={geoLoading}
+          className="w-full bg-blue-600 text-white text-sm py-1.5 rounded-md mb-2 disabled:opacity-50"
+        >
+          {geoLoading ? 'Getting location…' : '📍 Use current location'}
+        </button>
+
+        <div className="grid grid-cols-2 gap-2 mb-4">
+          <div>
+            <label className="text-xs text-gray-500">Latitude</label>
+            <input
+              type="number"
+              step="0.000001"
+              value={form.latitude}
+              onChange={(e) => update('latitude', e.target.value)}
+              placeholder="-90 to 90"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mt-1"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-gray-500">Longitude</label>
+            <input
+              type="number"
+              step="0.000001"
+              value={form.longitude}
+              onChange={(e) => update('longitude', e.target.value)}
+              placeholder="-180 to 180"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm mt-1"
+            />
+          </div>
+        </div>
 
         <div className="flex gap-2">
           <button

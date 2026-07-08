@@ -142,7 +142,7 @@ export default function LeadList({ profile }) {
     <div className="max-w-md mx-auto pb-24">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
         <div>
-          <p className="font-medium text-base">AE Leads</p>
+          <p className="font-medium text-base">Dashboard</p>
           <p className="text-xs text-gray-500">
             {profile.name} · {profile.role === 'admin' ? 'Admin (all leads)' : 'Salesperson'} (ID: {profile.id.slice(0, 8)})
           </p>
